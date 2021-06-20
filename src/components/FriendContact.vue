@@ -1,6 +1,6 @@
 <template>
   <li>
-    <h2>{{ name }} {{ friendIsFavorite ? "(Favorite)" : "" }}</h2>
+    <h2>{{ name }} {{ isFavorite ? "(Favorite)" : "" }}</h2>
     <button @click="toggleFavorite">Toggle Favorite</button>
     <button @click="toggleDetails">
       {{ detailsAreVisible ? "Hide" : "Show" }} Details
@@ -15,6 +15,7 @@
         {{ emailAddress }}
       </li>
     </ul>
+    <button @click="$emit('delete', id)">Delete</button>
   </li>
 </template>
 
@@ -29,6 +30,10 @@ export default {
   //   "isFavorite",
   // ],
   props : {
+    id: {
+      type: String,
+      required: true
+    },
     name: {
       type: String,
       required: true,
@@ -50,11 +55,22 @@ export default {
       // }
     },
   },
+  // tell which custom events this component will eventually emit
+  emits: ['toggle-favorite', 'delete'],
+  // emits: {
+  //   'toggle-favorite': function(id) {
+  //     if (id) {
+  //       return ture;
+  //     } else {
+  //       console.log('Id is missing!');
+  //       return false
+  //     }
+  //   }
+  // },
   data() {
     return {
       detailsAreVisible: false,
       // if want mutated props value should inital new one
-      friendIsFavorite: this.isFavorite
     };
   },
   methods: {
@@ -71,8 +87,14 @@ export default {
     //   }
     // }
     toggleFavorite() {
-      this.friendIsFavorite = !this.friendIsFavorite
-    }
+      // this.friendIsFavorite = !this.friendIsFavorite
+      // .$emit() can call from inside a Vue component
+      // allows to emit custom event to which you then 
+      // can listen from inside the parent component
+      // emit wants at least one argument, the name of the custom event
+      this.$emit('toggle-favorite', this.id);
+    },
+
   },
 };
 </script>
